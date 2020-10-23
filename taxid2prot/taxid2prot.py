@@ -6,7 +6,7 @@ from typing import List, Union
 from fake_useragent import UserAgent
 from selenium import webdriver
 from tqdm import tqdm
-import multiproc_utils
+from . import multiproc_utils
 
 # pylint: disable=line-too-long
 

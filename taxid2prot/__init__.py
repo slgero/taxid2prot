@@ -1,0 +1,1 @@
+from .taxid2prot import ParseProtein
