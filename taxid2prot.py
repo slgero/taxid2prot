@@ -24,7 +24,7 @@ class ParseProtein:
 
     Examples 👀
     ----------
-    >>> folder_to_download = "C:\\Users\\SS\\Documents"
+    >>> folder_to_download = "."
     >>> parser = ParseProtein(folder_to_download)
     >>> parser.parse([435, 436])
     And now look at folder_to_download/proteins/ for your files.
@@ -33,7 +33,7 @@ class ParseProtein:
     def __init__(self, path_to_save: str, executable_path: str = "chromedriver"):
         self.executable_path = executable_path
         if self.__check_path(path_to_save):
-            self.download_folder = self.__create_download_folder(path_to_save)
+            self.download_folder: str = self.__create_download_folder(path_to_save)
             print(f"Your files will be save in {self.download_folder}.")
         else:
             raise ValueError(f"Неверный путь для сохранения: {path_to_save}")
@@ -114,7 +114,7 @@ class ParseProtein:
                 if (items.every(e => e.state === "COMPLETE"))
                     return items.map(e => e.fileUrl || e.file_url);
             """
-        return bool(self.driver.execute_script(js_script))
+        return not bool(self.driver.execute_script(js_script))
 
     def wait_until_files_download(self, close_driver: bool = False) -> None:
         """Sleep while files are downloading."""
@@ -145,8 +145,8 @@ class ParseProtein:
         for file in files:
             # Read first line with the name of the organism:
             old_name = os.path.join(self.download_folder, file)
-            with open(old_name) as file:
-                first_line = file.readline()
+            with open(old_name) as fasta_file:
+                first_line = fasta_file.readline()
 
             # Find the name of the organism:
             new_name = re.findall(pattern_to_find_name, first_line)
@@ -189,3 +189,10 @@ class ParseProtein:
         self.wait_until_files_download(close_driver=True)
         self.rename_files()
         print(f"The downloaded files are located here: {self.download_folder}.")
+
+
+if __name__ == '__main__':
+    print("Testing.")
+    folder_to_download = "."
+    parser = ParseProtein(folder_to_download)
+    parser.parse([435, 436])
