@@ -6,6 +6,7 @@ from typing import List, Union
 from fake_useragent import UserAgent
 from selenium import webdriver
 from tqdm import tqdm
+import multiproc_utils
 
 # pylint: disable=line-too-long
 
@@ -139,7 +140,7 @@ class ParseProtein:
 
         # Get all *.fasta files in folder:
         files = os.listdir(self.download_folder)
-        files = [x for x in files if x.endswith(".fasta")]
+        files = [x for x in files if x.endswith(".fasta") and x.startswith("sequence")]
 
         pattern_to_find_name = r"\[([A-Za-z0-9_\s]+)\]"
         for file in files:
@@ -191,8 +192,15 @@ class ParseProtein:
         print(f"The downloaded files are located here: {self.download_folder}.")
 
 
-if __name__ == '__main__':
-    print("Testing.")
+if __name__ == "__main__":
+    from multiprocessing import Pool
+
+    cpu_count = multiproc_utils.get_cpu_count()
+    tax_indices = [435, 436, 437, 438, 439, 440, 441, 442, 443]
+    tax_indices = multiproc_utils.get_batches(tax_indices, cpu_count)
+
     folder_to_download = "."
     parser = ParseProtein(folder_to_download)
-    parser.parse([435, 436])
+
+    pool = Pool(cpu_count)
+    pool.map(parser.parse, tax_indices)
