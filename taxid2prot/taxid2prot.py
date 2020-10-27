@@ -5,7 +5,10 @@ from typing import List, Union
 import requests
 from fake_useragent import UserAgent
 from tqdm import tqdm
-from . import multiproc_utils
+try:
+    from . import multiproc_utils
+except ImportError:
+    import multiproc_utils
 
 
 class Parser:
@@ -62,12 +65,10 @@ class Parser:
         """Find scientific organism name in fasta."""
 
         organism_name = "no_name"
-        os_pattern = r"OS=([A-Za-z0-9_\s]+)"
+        os_pattern = r"OS=([A-Za-z]+\s[A-Za-z]+)"
         result = re.search(os_pattern, text)
         if result:
-            organism_name = (
-                result.group(0).replace("OS=", "").lower().strip().replace(" ", "_")
-            )
+            organism_name = result.group(1).lower().replace(" ", "_")
         return organism_name
 
     # pylint: disable=bad-continuation
@@ -124,10 +125,12 @@ class Parser:
 
 
 if __name__ == "__main__":
+    
+    # Testing:
     from multiprocessing import Pool
 
     # pylint: disable=invalid-name
-    cpu_count = multiproc_utils.get_cpu_count()
+    cpu_count = multiproc_utils.get_cpu_count() + 5
     tax_indices = [435, 436, 437, 438, 439, 440, 441, 442, 443]
     tax_indices = multiproc_utils.get_batches(tax_indices, cpu_count)
 
