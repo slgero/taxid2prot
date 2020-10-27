@@ -1,1 +1,1 @@
-from .taxid2prot import ParseProtein
+from .taxid2prot import Parser
